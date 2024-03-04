@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Challan</title>
+<link rel="stylesheet" href="/static/materialize.min.css"> <!-- Include materialize.min.css -->
+<script>
+  function checkLicense() {
+            var licenseNumber = document.getElementById("license_number").value;
+            fetch('/check_license', {
+                method: 'POST',
+                body: JSON.stringify({license_number: licenseNumber}),
+                headers:{
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === '✅') {
+                    document.getElementById("status").innerText = "Status: Valid License";
+                } else {
+                    document.getElementById("status").innerText = "Status: Invalid License";
+                }
+            });
+            return false; // Prevent form submission
+        }
+document.addEventListener("DOMContentLoaded", function() {
+  // Function to generate a random 10-digit number
+  function generateRandomNumber() {
+    return Math.floor(1000000000 + Math.random() * 9000000000);
+  }
+
+  // Function to check if a number has been previously generated
+  function isNumberGenerated(number, generatedNumbers) {
+    return generatedNumbers.includes(number);
+  }
+
+  // Function to update the displayed number
+  function updateNumber() {
+    let generatedNumbers = JSON.parse(localStorage.getItem('generatedNumbers')) || [];
+    let randomNumber;
+    do {
+      randomNumber = generateRandomNumber();
+    } while (isNumberGenerated(randomNumber, generatedNumbers));
+
+    generatedNumbers.push(randomNumber);
+    localStorage.setItem('generatedNumbers', JSON.stringify(generatedNumbers));
+
+    document.getElementById("challan_number").textContent = randomNumber;
+  }
+
+  // Initial update
+  updateNumber();
+
+  // Function to fill date and time
+  function fillDateTime() {
+    const currentDate = new Date();
+    const dateField = document.getElementById("date");
+    const timeField = document.getElementById("time");
+
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    const dateString = currentDate.toLocaleDateString('en-GB', options);
+    const timeString = currentDate.toLocaleTimeString('en-US');
+
+    dateField.textContent = dateString;
+    timeField.textContent = timeString;
+  }
+
+  fillDateTime(); // Call the function to fill date and time when the page loads
+});
+</script>
+</head>
+<body>
+<nav>
+  <div class="nav-wrapper">
+    <a href="#" class="brand-logo center">E-CHALLAN</a>
+  </div>
+</nav>
+<div class="row">
+  <div class="col s12 m6">
+    <div class="card blue-grey darken-1">
+      <div class="card-content white-text">
+        <span class="card-title" style="text-align: center;">PAY CHALLAN</span>
+        <div style="text-align: center;">
+          <div class="row">
+            <div class="col s12">
+              ENTER THE LICENCE NO.:
+              <div class="input-field inline">
+                <label for="license_number"></label><input type="text" id="license_number" name="license_number" required>
+               <!-- <span class="helper-text" data-error="wrong" data-success="right">Helper text</span>-->
+              </div>
+            </div>
+          </div>
+          <a class="waves-effect waves-light btn" onclick="return checkLicense()">CHECK</a>
+        </div>
+        <p id="status"></p>
+        <div class="row">
+          <div class="col s12">
+            NAME:
+            <div class="input-field inline">
+              <label for="Name"></label><input id="Name" type="text" class="validate">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12">
+            CHALLAN NO. :
+            <div class="input-field inline">
+              <label for="Challan"></label><p id="challan_number"></p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12">
+            PLACE:
+            <div class="input-field inline">
+              <label for="place"></label><input id="place" type="text" class="validate">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12">
+            DATE :
+            <div class="input-field inline">
+              <label for="date"></label><span id="date"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12">
+            TIME :
+            <div class="input-field inline">
+              <label for="time"></label><span id="time"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-field col s12">
+          <label>
+            <select multiple>
+              <option value="" disabled selected>Choose your option</option>
+              <option value="1">Option 1</option>
+              <option value="2">Option 2</option>
+              <option value="3">Option 3</option>
+            </select>
+          </label>
+          <label>RULES BROKEN </label>
+        </div>
+        <div class="row">
+          <div class="col s12">
+            VEHICLE NO.:
+            <div class="input-field inline">
+              <label for="rc"></label><input id="rc" type="text" class="validate">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12">
+            TOTAL AMOUNT :
+            <div class="input-field inline">
+              <label for="amnt"></label><input id="amnt" type="text" class="validate">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-action">
+        <a href="#"><center>ISSUE</center></a>
+      </div>
+    </div>
+  </div>
+</div>
+<footer class="page-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col 23 s29">
+        <h5 class="white-text">TRAFFIC POLICE</h5>
+        <p class="grey-text text-lighten-4">Drive safe and be safe</p>
+      </div>
+      <div class="col 14 offset-l2 s12">
+        <!--<h5 class="white-text">Links</h5>
+        <ul>
+          <li><a class="grey-text text-lighten-3" href="#!">HOME</a></li>
+          <li><a class="grey-text text-lighten-3" href="#!">PAY CHALLAN</a></li>
+          <li><a class="grey-text text-lighten-3" href="#!">ISSUE CHALLAN</a></li>
+        </ul>-->
+      </div>
+    </div>
+  </div>
+</footer>
+<!--JavaScript at end of body for optimized loading-->
+<script type="text/javascript" src="/static/materialize.min.js"></script>
+</body>
+</html>
